@@ -1,65 +1,314 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import Header from '@/components/Header/Header';
+import LoginForm from '@/components/LoginForm/LoginForm';
+import GridMode from '@/components/GridMode/GridMode';
+import SplitMode from '@/components/SplitMode/SplitMode';
+import SpotlightMode from '@/components/SpotlightMode/SpotlightMode';
+import { getSession, clearSession } from '@/lib/auth';
+import { Config, Contestant, DisplayMode, AuthSession } from '@/lib/types';
+import styles from './page.module.css';
 
 export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+  // Auth State - Load session lazily on client side
+  const [session, setSession] = useState<AuthSession | null>(() => {
+    // Only access localStorage on client side
+    if (typeof window !== 'undefined') {
+      const saved = getSession();
+      console.log('🔐 [page.tsx] Initial session load:', saved);
+      return saved;
+    }
+    return null;
+  });
+  const [isCheckingAuth, setIsCheckingAuth] = useState(false);
+
+  // App State
+  const [config, setConfig] = useState<Config | null>(null);
+  const [contestants, setContestants] = useState<Contestant[]>([]);
+  const [onStageContestants, setOnStageContestants] = useState<Contestant[]>([]);
+  const [myScores, setMyScores] = useState<{ [sbd: string]: number | null }>({});
+  const [displayMode, setDisplayMode] = useState<DisplayMode>('LOCKED');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+
+  // Determine Display Mode
+  const determineDisplayMode = useCallback((
+    config: Config,
+    onStageCount: number,
+    myScores: { [sbd: string]: number | null },
+    onStageSBDs: string[]
+  ): DisplayMode => {
+    // 1. Nếu không có thí sinh trên sân khấu -> LOCKED
+    if (onStageCount === 0) {
+      return 'LOCKED';
+    }
+    
+    // 2. Có thí sinh trên sân khấu -> luôn hiển thị để BGK chấm điểm
+    // (Không tự động khóa khi đang có thí sinh)
+    
+    // 3. Xác định mode hiển thị theo số thí sinh
+    if (onStageCount === 1) return 'SPOTLIGHT';
+    if (onStageCount === 2) return 'SPLIT';
+    return 'GRID';
+  }, []);
+
+  // Load Data
+  const loadData = useCallback(async () => {
+    if (!session) return;
+
+    console.log('🔄 [loadData] Starting data load...');
+
+    try {
+      setError(null);
+
+      // Fetch config from API
+      const configResponse = await fetch('/api/config');
+      const configData = await configResponse.json();
+      
+      console.log('📋 [loadData] Config loaded:', configData);
+      setConfig(configData);
+
+      // Fetch contestants from API
+      const contestantsResponse = await fetch('/api/contestants');
+      const allContestants = await contestantsResponse.json();
+      
+      console.log('👥 [loadData] All contestants:', allContestants.length);
+      
+      const activeContestants = allContestants.filter((c: Contestant) => c.STATUS === 'ACTIVE');
+      setContestants(activeContestants);
+
+      const onStageSBDs = configData.ON_STAGE_SBD
+        .split(',')
+        .map((s: string) => s.trim())
+        .filter((s: string) => s.length > 0);
+
+      console.log('🎭 [loadData] ON_STAGE_SBD:', onStageSBDs);
+
+      const onStage = activeContestants.filter((c: Contestant) => 
+        onStageSBDs.includes(c.SBD)
+      );
+      
+      console.log('🎭 [loadData] onStage contestants:', onStage);
+      setOnStageContestants(onStage);
+
+      // Fetch scores from API
+      const scoresResponse = await fetch(
+        `/api/scores?username=${session.username}&segment=${configData.CURRENT_SEGMENT}&batchId=${configData.CURRENT_BATCH}`
+      );
+      const scores = await scoresResponse.json();
+      
+      console.log('📊 [loadData] Scores loaded:', scores);
+      setMyScores(scores);
+
+      const mode = determineDisplayMode(configData, onStage.length, scores, onStageSBDs);
+      
+      console.log('📺 [loadData] Display mode:', mode);
+      console.log('🔢 [loadData] onStage.length:', onStage.length);
+      
+      setDisplayMode(mode);
+
+      setIsLoading(false);
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setError('Không thể tải dữ liệu. Vui lòng kiểm tra kết nối.');
+      setIsLoading(false);
+    }
+  }, [session, determineDisplayMode]);
+
+  // Load data when authenticated
+  useEffect(() => {
+    if (session) {
+      // Load lần đầu
+      const timer = setTimeout(() => loadData(), 0);
+      
+      // Auto-reload mỗi 15 giây (tăng từ 5s để tránh flicker)
+      const interval = setInterval(() => {
+        console.log('⏰ [Auto-reload] Refreshing data...');
+        loadData();
+      }, 15000); // 15 giây
+      
+      return () => {
+        clearTimeout(timer);
+        clearInterval(interval);
+      };
+    }
+  }, [session, loadData]);
+
+  // Handle Login Success
+  const handleLoginSuccess = (newSession: AuthSession) => {
+    setSession(newSession);
+  };
+
+  // Handle Logout
+  const handleLogout = () => {
+    if (confirm('Bạn có chắc muốn đăng xuất?')) {
+      clearSession();
+      setSession(null);
+      setConfig(null);
+      setContestants([]);
+      setOnStageContestants([]);
+      setMyScores({});
+    }
+  };
+
+  // Submit Score Handler (WITH TOKEN VERIFICATION)
+  const handleSubmitScore = async (sbd: string, score: number) => {
+    if (!config || !session) return;
+
+    // Kiểm tra nếu BTC đã khóa hệ thống
+    if (config.IS_LOCKED) {
+      alert('⚠️ Hệ thống đã bị khóa bởi Ban Tổ Chức. Không thể chấm điểm.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/scores/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          score: {
+            TIMESTAMP: new Date().toISOString(),
+            JUDGE_ID: session.username,
+            SBD: sbd,
+            SEGMENT: config.CURRENT_SEGMENT,
+            BATCH_ID: config.CURRENT_BATCH,
+            SCORE: score,
+          },
+          authToken: session.token,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setMyScores(prev => ({ ...prev, [sbd]: score }));
+      } else {
+        alert(result.message || 'Lỗi khi gửi điểm. Vui lòng thử lại.');
+        
+        // Nếu token không hợp lệ, buộc đăng xuất
+        if (result.message?.includes('Token')) {
+          clearSession();
+          setSession(null);
+        }
+      }
+    } catch (error) {
+      console.error('Submit error:', error);
+      alert('Lỗi khi gửi điểm. Vui lòng thử lại.');
+    }
+  };
+
+  // Checking Auth
+  if (isCheckingAuth) {
+    return (
+      <div className={styles.loadingScreen}>
+        <div className={styles.spinner}></div>
+        <p className={styles.loadingText}>Đang kiểm tra phiên đăng nhập...</p>
+      </div>
+    );
+  }
+
+  // Not Authenticated - Show Login
+  if (!session) {
+    return <LoginForm onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  // Loading State
+  if (isLoading || !config) {
+    return (
+      <div className={styles.loadingScreen}>
+        <div className={styles.spinner}></div>
+        <p className={styles.loadingText}>Đang tải dữ liệu...</p>
+      </div>
+    );
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <div className={styles.errorScreen}>
+        <div className={styles.errorIcon}>⚠️</div>
+        <p className={styles.errorText}>{error}</p>
+        <button className={styles.retryButton} onClick={loadData}>
+          Thử lại
+        </button>
+      </div>
+    );
+  }
+
+  // Locked State
+  if (displayMode === 'LOCKED') {
+    return (
+      <div className={styles.container}>
+        <Header config={config} judgeId={session.username} />
+        <div className={styles.lockedScreen}>
+          <div className={styles.lockedIcon}>🔒</div>
+          <h1 className={styles.lockedTitle}>Hệ thống đã khóa</h1>
+          <p className={styles.lockedMessage}>
+            {config.IS_LOCKED 
+              ? 'Cảm ơn Quý Giám Khảo đã hoàn thành chấm điểm'
+              : 'Chờ thí sinh lên sân khấu...'}
           </p>
+          <button className={styles.logoutButton} onClick={handleLogout}>
+            🚪 Đăng xuất
+          </button>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </div>
+    );
+  }
+
+  // Main App
+  return (
+    <div className={styles.container}>
+      <Header config={config} judgeId={session.username} />
+
+      {/* Warning banner khi BTC khóa hệ thống */}
+      {config.IS_LOCKED && (
+        <div style={{
+          background: '#ff9800',
+          color: 'white',
+          padding: '12px 20px',
+          textAlign: 'center',
+          fontWeight: 'bold',
+          fontSize: '16px',
+          borderBottom: '3px solid #f57c00'
+        }}>
+          ⚠️ Hệ thống đã bị khóa bởi Ban Tổ Chức - Chỉ xem, không thể chấm điểm
         </div>
+      )}
+
+      <main className={styles.main}>
+        {displayMode === 'GRID' && (
+          <GridMode
+            contestants={onStageContestants}
+            myScores={myScores}
+            onSubmitScore={handleSubmitScore}
+          />
+        )}
+
+        {displayMode === 'SPLIT' && (
+          <SplitMode
+            contestants={onStageContestants}
+            myScores={myScores}
+            onSubmitScore={handleSubmitScore}
+          />
+        )}
+
+        {displayMode === 'SPOTLIGHT' && onStageContestants[0] && (
+          <SpotlightMode
+            contestant={onStageContestants[0]}
+            myScore={myScores[onStageContestants[0].SBD] ?? null}
+            onSubmitScore={handleSubmitScore}
+          />
+        )}
       </main>
+
+      <button className={styles.floatingLogout} onClick={handleLogout}>
+        🚪
+      </button>
     </div>
   );
 }

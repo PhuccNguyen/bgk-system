@@ -1,0 +1,141 @@
+.header {
+  background: linear-gradient(135deg, var(--color-bg-dark) 0%, var(--color-bg-medium) 100%);
+  border-bottom: 2px solid var(--color-primary);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-dropdown);
+  box-shadow: var(--shadow-lg);
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
+.left,
+.center,
+.right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.center {
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
+.right {
+  justify-content: flex-end;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.crown {
+  font-size: var(--font-size-2xl);
+  filter: drop-shadow(0 0 8px var(--color-primary));
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 2px;
+}
+
+/* Badges */
+.roundBadge,
+.segmentBadge {
+  padding: var(--spacing-sm) var(--spacing-xl);
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+  letter-spacing: 1px;
+}
+
+.roundBadge {
+  background: var(--color-primary);
+  color: var(--color-bg-dark);
+}
+
+.segmentBadge {
+  background: var(--color-secondary);
+  color: var(--color-text-primary);
+}
+
+.separator {
+  font-size: var(--font-size-xl);
+  color: var(--color-text-secondary);
+}
+
+/* Judge Info */
+.judgeInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-xs);
+}
+
+.judgeLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.judgeId {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Locked Banner */
+.lockedBanner {
+  background: var(--color-error);
+  color: var(--color-text-primary);
+  text-align: center;
+  padding: var(--spacing-md);
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.lockIcon {
+  font-size: var(--font-size-xl);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+
+  .left,
+  .center,
+  .right {
+    justify-content: center;
+  }
+}

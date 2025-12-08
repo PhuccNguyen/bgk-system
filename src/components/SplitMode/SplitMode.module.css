@@ -1,0 +1,171 @@
+.splitContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  max-width: 1920px;
+  margin: 0 auto;
+  height: calc(100vh - 120px);
+}
+
+.column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-medium);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.imageWrapper {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* Scored Overlay */
+.scoredOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(16, 185, 129, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+}
+
+.scoredValue {
+  font-size: 120px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* SBD Badge */
+.sbdBadge {
+  position: absolute;
+  top: var(--spacing-lg);
+  left: var(--spacing-lg);
+  background: var(--color-primary);
+  color: var(--color-bg-dark);
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  z-index: var(--z-base);
+}
+
+/* Info Bar */
+.infoBar {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.7));
+  padding: var(--spacing-xl);
+  text-align: center;
+}
+
+.name {
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* Score Panel */
+.scorePanel {
+  padding: var(--spacing-xl);
+  background: var(--color-bg-dark);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.scoreButtons {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.scoreButton {
+  min-width: 70px;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 2px solid var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  background: transparent;
+  transition: all var(--transition-fast);
+}
+
+.scoreButton:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: rgba(212, 175, 55, 0.1);
+  transform: scale(1.05);
+}
+
+.scoreButton.selected {
+  background: var(--color-primary);
+  color: var(--color-bg-dark);
+  border-color: var(--color-primary);
+  transform: scale(1.1);
+}
+
+.scoreButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.submitButton {
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  background: var(--color-success);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #0ea572;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.submitButton:disabled {
+  background: var(--color-text-secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .splitContainer {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .column {
+    min-height: 80vh;
+  }
+
+  .sbdBadge {
+    font-size: var(--font-size-2xl);
+  }
+
+  .scoredValue {
+    font-size: 80px;
+  }
+}
