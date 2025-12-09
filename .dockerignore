@@ -1,0 +1,13 @@
+# Docker ignore file
+node_modules
+.next
+.git
+.gitignore
+.env*.local
+.vscode
+*.md
+test-*.js
+*.log
+.DS_Store
+coverage
+.vercel
