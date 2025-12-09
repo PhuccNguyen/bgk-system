@@ -28,9 +28,11 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/next.config.ts ./
+COPY --from=builder /app/tsconfig.json ./
 
-# Install only production dependencies
-RUN npm ci --only=production
+# Install production dependencies + TypeScript (needed for next.config.ts)
+RUN npm ci --only=production && \
+    npm install typescript @types/node --save-dev
 
 # Expose port
 EXPOSE 3000
