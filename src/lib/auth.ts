@@ -70,9 +70,14 @@ export function createSession(judge: Judge): AuthSession {
   const session: AuthSession = {
     username: judge.USERNAME,
     fullName: judge.FULL_NAME,
+    image: judge.IMAGE_URL_BGK,
     token,
     expiresAt,
   };
+  
+  console.log('🔑 [auth] Creating session for:', judge.USERNAME);
+  console.log('🖼️ [auth] Judge image URL:', judge.IMAGE_URL_BGK);
+  console.log('📋 [auth] Full session:', session);
   
   // Client sẽ tự lưu localStorage sau khi nhận response
   return session;

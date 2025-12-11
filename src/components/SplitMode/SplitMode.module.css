@@ -1,27 +1,37 @@
+/* ===== SPLIT CONTAINER ===== */
 .splitContainer {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-xl);
-  padding: var(--spacing-2xl);
-  max-width: 1920px;
+  padding: var(--spacing-md);
+  max-width: 1400px;
   margin: 0 auto;
-  min-height: calc(100vh - 140px);
-}
-
-.column {
-  position: relative;
+  min-height: calc(100vh - 120px);
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* ===== CONTESTANTS GRID ===== */
+.contestantsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+  flex: 1;
+}
+
+/* ===== CONTESTANT CARD ===== */
+.contestantCard {
+  position: relative;
   background: linear-gradient(135deg, rgba(10, 14, 39, 0.95), rgba(26, 31, 58, 0.95));
   backdrop-filter: blur(20px);
   border-radius: var(--radius-xl);
-  overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-  transition: all var(--transition-base);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
-.column::before {
+.contestantCard::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -32,28 +42,87 @@
     rgba(240, 147, 251, 0.05) 100%
   );
   opacity: 0;
-  transition: opacity var(--transition-base);
-  z-index: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
 }
 
-.column:hover::before {
+.contestantCard:hover::before {
   opacity: 1;
 }
 
-.column:hover {
+.contestantCard:hover {
   border-color: rgba(0, 212, 255, 0.4);
-  box-shadow: 
-    0 30px 80px rgba(0, 0, 0, 0.6),
-    0 0 40px rgba(0, 212, 255, 0.2);
-  transform: translateY(-5px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 212, 255, 0.2);
+  transform: translateY(-4px);
 }
 
-/* ===== IMAGE WRAPPER ===== */
+.cardActive {
+  border-color: rgba(0, 212, 255, 0.6);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 50px rgba(0, 212, 255, 0.4);
+}
+
+.cardActive::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00d4ff, #0099ff);
+  animation: activePulse 2s ease-in-out infinite;
+}
+
+@keyframes activePulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.cardScored {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.05));
+}
+
+.cardScored:hover {
+  border-color: rgba(16, 185, 129, 0.7);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(16, 185, 129, 0.3);
+}
+
+/* ===== POSITION LABEL ===== */
+.positionLabel {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  z-index: 5;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ===== IMAGE CONTAINER ===== */
+.imageContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  max-height: 400px;
+}
+
 .imageWrapper {
   position: relative;
-  flex: 1;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.3);
 }
 
 .image {
@@ -61,10 +130,10 @@
   height: 100%;
   object-fit: cover;
   object-position: top center;
-  transition: transform var(--transition-slow);
+  transition: transform 0.4s ease;
 }
 
-.column:hover .image {
+.contestantCard:hover .image {
   transform: scale(1.05);
 }
 
@@ -77,20 +146,20 @@
     rgba(16, 185, 129, 0.95) 0%,
     rgba(5, 150, 105, 0.95) 100%
   );
+  backdrop-filter: blur(5px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-lg);
-  backdrop-filter: blur(3px);
+  gap: var(--spacing-md);
   z-index: 10;
-  animation: overlayReveal 0.5s ease-out;
+  animation: overlayFadeIn 0.4s ease-out;
 }
 
-@keyframes overlayReveal {
+@keyframes overlayFadeIn {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
@@ -98,79 +167,63 @@
   }
 }
 
-.scoredOverlay::before {
-  content: '⭐';
-  font-size: 80px;
-  animation: starRotate 3s linear infinite;
-}
-
-@keyframes starRotate {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.scoredValue {
-  font-size: 120px;
-  font-weight: 700;
-  color: white;
-  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  animation: scoreZoomIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-@keyframes scoreZoomIn {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.3);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.scoredValue::after {
-  content: '✓';
-  position: absolute;
-  bottom: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 36px;
+.scoredCheck {
+  width: 60px;
+  height: 60px;
   background: white;
   color: #10b981;
-  width: 50px;
-  height: 50px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  font-size: 32px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  animation: checkBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* ===== SBD BADGE ===== */
-.sbdBadge {
-  position: absolute;
-  top: var(--spacing-xl);
-  left: var(--spacing-xl);
-  background: linear-gradient(135deg, #f093fb, #f5576c);
-  color: white;
-  font-size: 36px;
+@keyframes checkBounce {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.scoredValue {
+  font-size: 56px;
   font-weight: 700;
-  padding: var(--spacing-md) var(--spacing-xl);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 10px 40px rgba(240, 147, 251, 0.5);
-  z-index: 5;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  transition: all var(--transition-base);
-  animation: badgeEntrance 0.6s ease-out;
+  color: white;
+  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  animation: valueZoom 0.5s ease-out 0.2s both;
 }
 
-@keyframes badgeEntrance {
+@keyframes valueZoom {
   from {
-    transform: translateY(-20px);
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.scoredLabel {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  animation: labelSlide 0.4s ease-out 0.4s both;
+}
+
+@keyframes labelSlide {
+  from {
+    transform: translateY(20px);
     opacity: 0;
   }
   to {
@@ -179,186 +232,385 @@
   }
 }
 
-.column:hover .sbdBadge {
-  transform: scale(1.1) rotate(-2deg);
-  box-shadow: 0 15px 50px rgba(240, 147, 251, 0.7);
-}
-
-/* ===== INFO BAR ===== */
-.infoBar {
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.98) 0%,
-    rgba(0, 0, 0, 0.85) 100%
-  );
-  backdrop-filter: blur(10px);
-  padding: var(--spacing-2xl) var(--spacing-xl);
-  text-align: center;
-  position: relative;
-  z-index: 2;
-  border-top: 2px solid rgba(0, 212, 255, 0.2);
-}
-
-.infoBar::before {
-  content: '';
+/* ===== LOADING OVERLAY ===== */
+.loadingOverlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.5), transparent);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  z-index: 15;
 }
 
-.name {
-  font-size: 28px;
+.loadingSpinner {
+  width: 45px;
+  height: 45px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #00d4ff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingText {
+  font-size: 16px;
   font-weight: 600;
   color: white;
   letter-spacing: 1px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  line-height: 1.4;
+}
+
+/* ===== SBD BADGE ===== */
+.sbdBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+  z-index: 5;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s;
+  min-width: 50px;
+  text-align: center;
+}
+
+.contestantCard:hover .sbdBadge {
+  transform: scale(1.08);
+}
+
+.sbdScored {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.5);
+}
+
+/* ===== INFO SECTION ===== */
+.infoSection {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7));
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.contestantName {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.statusBadge {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statusReady {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.statusWaiting {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.2);
+}
+
+.completedBadge {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* ===== SCORE PANEL ===== */
 .scorePanel {
-  padding: var(--spacing-xl);
-  background: rgba(0, 0, 0, 0.5);
+  padding: var(--spacing-md);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  position: relative;
-  z-index: 2;
-}
-
-.scoreButtons {
-  display: flex;
   gap: var(--spacing-sm);
-  justify-content: center;
-  flex-wrap: wrap;
 }
 
-.scoreButton {
-  min-width: 80px;
-  padding: var(--spacing-md) var(--spacing-lg);
+.scorePanelLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.scoreGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.scoreBtn {
+  aspect-ratio: 1;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-md);
-  font-size: 24px;
-  font-weight: 700;
-  color: white;
   background: rgba(255, 255, 255, 0.05);
-  transition: all var(--transition-base);
-  position: relative;
-  overflow: hidden;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  transition: all 0.2s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 45px;
 }
 
-.scoreButton::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent, rgba(0, 212, 255, 0.2));
-  transform: translateX(-100%);
-  transition: transform var(--transition-base);
-}
-
-.scoreButton:hover:not(:disabled)::before {
-  transform: translateX(0);
-}
-
-.scoreButton:hover:not(:disabled) {
+.scoreBtn:hover:not(:disabled) {
   border-color: rgba(0, 212, 255, 0.6);
-  transform: scale(1.1);
-  box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+  background: rgba(0, 212, 255, 0.1);
+  transform: scale(1.05);
 }
 
-.scoreButton.selected {
-  background: linear-gradient(135deg, #00d4ff, #0099ff);
-  border-color: #00d4ff;
-  transform: scale(1.15);
-  box-shadow: 0 10px 35px rgba(0, 212, 255, 0.6);
-  animation: selectedGlow 1.5s ease-in-out infinite;
-}
-
-@keyframes selectedGlow {
-  0%, 100% {
-    box-shadow: 0 10px 35px rgba(0, 212, 255, 0.6);
-  }
-  50% {
-    box-shadow: 0 15px 45px rgba(0, 212, 255, 0.9);
-  }
-}
-
-.scoreButton:disabled {
+.scoreBtn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.submitButton {
-  padding: var(--spacing-lg) var(--spacing-2xl);
+.scoreBtnSelected {
+  background: linear-gradient(135deg, #00d4ff, #0099ff);
+  border-color: #00d4ff;
+  transform: scale(1.08);
+  box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5);
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 10px 16px;
   background: linear-gradient(135deg, #10b981, #059669);
   color: white;
-  font-size: var(--font-size-xl);
+  font-size: 14px;
   font-weight: 700;
-  border-radius: var(--radius-lg);
-  transition: all var(--transition-base);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+  cursor: pointer;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
-  position: relative;
-  overflow: hidden;
+  letter-spacing: 1px;
+  margin-top: var(--spacing-xs);
 }
 
-.submitButton::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s;
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 35px rgba(16, 185, 129, 0.5);
 }
 
-.submitButton:hover:not(:disabled)::before {
-  transform: translateX(100%);
-}
-
-.submitButton:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(16, 185, 129, 0.6);
-}
-
-.submitButton:disabled {
+.submitBtn:disabled {
   background: rgba(255, 255, 255, 0.1);
   cursor: not-allowed;
   opacity: 0.5;
 }
 
+.btnIcon {
+  font-size: 18px;
+}
+
+.btnSpinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* ===== QUICK SUBMIT ===== */
+.quickSubmitContainer {
+  position: sticky;
+  bottom: var(--spacing-lg);
+  z-index: 100;
+  animation: slideUpFade 0.4s ease-out;
+}
+
+@keyframes slideUpFade {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.quickSubmitBtn {
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  box-shadow: 0 10px 35px rgba(240, 147, 251, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.quickSubmitBtn:hover:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(240, 147, 251, 0.7);
+}
+
+.quickSubmitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quickSubmitIcon {
+  font-size: 24px;
+  animation: lightning 1.5s ease-in-out infinite;
+}
+
+@keyframes lightning {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+/* ===== PROGRESS BAR ===== */
+.progressBar {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.progressLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #00d4ff, #10b981);
+  border-radius: 10px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
-  .splitContainer {
+  .contestantsGrid {
     grid-template-columns: 1fr;
-    min-height: auto;
     gap: var(--spacing-lg);
   }
 
-  .column {
-    min-height: 70vh;
+  .contestantCard {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .imageContainer {
+    aspect-ratio: 3 / 4;
+  }
+}
+
+@media (max-width: 768px) {
+  .splitContainer {
+    padding: var(--spacing-sm);
   }
 
   .sbdBadge {
-    font-size: 28px;
-    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: 18px;
+    padding: 6px 10px;
   }
 
   .scoredValue {
-    font-size: 90px;
+    font-size: 48px;
   }
 
-  .name {
-    font-size: 24px;
+  .scoredCheck {
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
   }
 
-  .scoreButton {
-    min-width: 70px;
-    font-size: 20px;
+  .contestantName {
+    font-size: 16px;
+  }
+
+  .scoreGrid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+  }
+  
+  .scoreBtn {
+    min-height: 40px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .scoreBtn {
+    font-size: 18px;
+  }
+
+  .submitBtn {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .quickSubmitBtn {
+    padding: 16px 20px;
+    font-size: 16px;
   }
 }

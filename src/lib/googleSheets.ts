@@ -155,7 +155,7 @@ export async function fetchJudges(): Promise<Judge[]> {
   try {
     console.log('🔍 [googleSheets] Fetching judges from SHEET_ID:', SHEET_ID);
     
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/JUDGES!A2:D100`;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/JUDGES!A2:E100`;
     const response = await authenticatedFetch(url);
     
     console.log('📡 [googleSheets] Response status:', response.status);
@@ -168,14 +168,28 @@ export async function fetchJudges(): Promise<Judge[]> {
       return [];
     }
     
-    const judges = data.values.map((row: string[]) => ({
-      USERNAME: row[0]?.trim().toLowerCase(),  // Đổi từ JUDGE_ID thành USERNAME
-      PASSWORD_HASH: row[1]?.trim(),
-      FULL_NAME: row[2]?.trim(),
-      STATUS: (row[3]?.trim() || 'ACTIVE') as 'ACTIVE' | 'INACTIVE',
-    }));
+    const judges = data.values
+      .filter((row: string[]) => {
+        // Chỉ lấy các row có USERNAME và PASSWORD_HASH
+        return row[0]?.trim() && row[1]?.trim();
+      })
+      .map((row: string[]) => ({
+        USERNAME: row[0]?.trim().toLowerCase(),  // A: USERNAME
+        PASSWORD_HASH: row[1]?.trim(),           // B: PASSWORD_HASH  
+        FULL_NAME: row[2]?.trim() || row[0]?.trim(), // C: FULL_NAME (fallback to USERNAME)
+        IMAGE_URL_BGK: row[3]?.trim() || '',     // D: IMAGE_URL_BGK
+        STATUS: (row[4]?.trim() || 'ACTIVE') as 'ACTIVE' | 'INACTIVE', // E: STATUS
+      }));
     
-    console.log('👥 [googleSheets] Parsed judges:', judges.map((j: Judge) => j.USERNAME));
+    console.log('👥 [googleSheets] Valid judges found:', judges.length);
+    console.log('👥 [googleSheets] Judges data:', judges.map((j: Judge) => `${j.USERNAME} - ${j.FULL_NAME} - IMG: ${j.IMAGE_URL_BGK ? 'YES' : 'NO'}`));
+    
+    // Debug cụ thể cho judges có hình
+    const judgesWithImages = judges.filter((j: Judge) => j.IMAGE_URL_BGK);
+    console.log('🖼️ [googleSheets] Judges with images:', judgesWithImages.map((j: Judge) => ({ 
+      username: j.USERNAME, 
+      image: j.IMAGE_URL_BGK ? j.IMAGE_URL_BGK.substring(0, 50) + '...' : 'NO IMAGE'
+    })));
     return judges;
   } catch (error) {
     console.error('❌ [googleSheets] Error fetching judges:', error);

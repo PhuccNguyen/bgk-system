@@ -215,14 +215,25 @@
   gap: var(--spacing-md);
   padding: var(--spacing-sm) var(--spacing-lg);
   background: rgba(255, 255, 255, 0.05);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-xl);
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all var(--transition-base);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .judgeCard:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 6px 25px rgba(0, 212, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.judgeContent {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  flex: 1;
 }
 
 .judgeAvatar {
@@ -238,6 +249,32 @@
 
 .avatarIcon {
   font-size: 20px;
+}
+
+.avatarImage {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  position: relative;
+  z-index: 2;
+  background: white;
+}
+
+.judgeAvatarWithImage {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.imageContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 .judgeInfo {
@@ -263,18 +300,19 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 127, 0.1));
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: var(--border-radius-lg);
-  color: rgba(239, 68, 68, 0.9);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(220, 38, 127, 0.08));
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: var(--radius-md);
+  color: rgba(239, 68, 68, 0.85);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-base);
   backdrop-filter: blur(8px);
   position: relative;
   overflow: hidden;
+  white-space: nowrap;
 }
 
 .logoutButton::before {
@@ -293,10 +331,10 @@
 }
 
 .logoutButton:hover {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 127, 0.15));
-  border-color: rgba(239, 68, 68, 0.4);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(220, 38, 127, 0.12));
+  border-color: rgba(239, 68, 68, 0.3);
+  transform: scale(1.02);
+  box-shadow: 0 3px 10px rgba(239, 68, 68, 0.15);
   color: rgba(239, 68, 68, 1);
 }
 
@@ -305,17 +343,17 @@
 }
 
 .logoutButton:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.15);
+  transform: scale(0.98);
+  box-shadow: 0 1px 4px rgba(239, 68, 68, 0.1);
 }
 
 .logoutIcon {
-  font-size: 16px;
+  font-size: 14px;
   color: inherit;
 }
 
 .logoutText {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   color: inherit;
   white-space: nowrap;
 }
@@ -479,6 +517,14 @@
 
   .judgeCard {
     padding: var(--spacing-xs) var(--spacing-md);
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .judgeContent {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    align-items: center;
   }
 
   .judgeAvatar {
@@ -488,11 +534,13 @@
 
   .judgeName {
     font-size: var(--font-size-sm);
+    text-align: center;
   }
 
   .logoutButton {
-    padding: var(--spacing-xs) var(--spacing-sm);
+    padding: var(--spacing-xs);
     font-size: var(--font-size-xs);
+    min-width: auto;
   }
 
   .logoutText {
@@ -500,6 +548,253 @@
   }
 
   .logoutIcon {
-    font-size: 14px;
+    font-size: 12px;
+  }
+}
+
+/* ===== LOGOUT CONFIRMATION DIALOG ===== */
+.dialogOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2147483647;
+  animation: overlayFadeIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  padding: var(--spacing-lg);
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(10px);
+  }
+}
+
+.dialogContainer {
+  background: linear-gradient(145deg, 
+    rgba(15, 23, 42, 0.95) 0%, 
+    rgba(30, 41, 59, 0.95) 100%
+  );
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  max-width: 420px;
+  width: 100%;
+  animation: dialogSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.dialogContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.05) 50%, 
+    transparent 100%
+  );
+  animation: dialogShimmer 2s infinite;
+}
+
+@keyframes dialogSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes dialogShimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.dialogHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-lg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  z-index: 1;
+}
+
+.dialogIcon {
+  font-size: 28px;
+  background: linear-gradient(45deg, #fbbf24, #f59e0b);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.3));
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% { 
+    transform: scale(1);
+    filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.3));
+  }
+  50% { 
+    transform: scale(1.1);
+    filter: drop-shadow(0 4px 8px rgba(251, 191, 36, 0.5));
+  }
+}
+
+.dialogTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+
+.dialogBody {
+  padding: 0 var(--spacing-xl) var(--spacing-lg);
+  position: relative;
+  z-index: 1;
+}
+
+.dialogMessage {
+  font-size: var(--font-size-base);
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  margin: 0 0 var(--spacing-sm);
+  font-weight: 500;
+}
+
+.dialogSubmessage {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+  margin: 0;
+  font-style: italic;
+}
+
+.dialogActions {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-xl);
+  position: relative;
+  z-index: 1;
+}
+
+.cancelButton,
+.confirmButton {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border: 1px solid;
+  position: relative;
+  overflow: hidden;
+}
+
+.cancelButton {
+  background: linear-gradient(135deg, 
+    rgba(100, 116, 139, 0.1), 
+    rgba(71, 85, 105, 0.1)
+  );
+  border-color: rgba(100, 116, 139, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.cancelButton:hover {
+  background: linear-gradient(135deg, 
+    rgba(100, 116, 139, 0.15), 
+    rgba(71, 85, 105, 0.15)
+  );
+  border-color: rgba(100, 116, 139, 0.5);
+  color: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2);
+}
+
+.confirmButton {
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.15), 
+    rgba(220, 38, 127, 0.15)
+  );
+  border-color: rgba(239, 68, 68, 0.4);
+  color: rgba(239, 68, 68, 1);
+}
+
+.confirmButton:hover {
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.2), 
+    rgba(220, 38, 127, 0.2)
+  );
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.cancelButton:active,
+.confirmButton:active {
+  transform: translateY(0);
+}
+
+.buttonIcon {
+  font-size: 16px;
+}
+
+/* Mobile Responsive for Dialog */
+@media (max-width: 768px) {
+  .dialogOverlay {
+    padding: var(--spacing-md);
+  }
+  
+  .dialogContainer {
+    max-width: 100%;
+  }
+  
+  .dialogHeader {
+    padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
+  }
+  
+  .dialogBody {
+    padding: 0 var(--spacing-lg) var(--spacing-md);
+  }
+  
+  .dialogActions {
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
+    flex-direction: column;
+  }
+  
+  .cancelButton,
+  .confirmButton {
+    padding: var(--spacing-sm) var(--spacing-md);
   }
 }

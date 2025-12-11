@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './Header.module.css';
 import { Config } from '@/lib/types';
 import Image from 'next/image';
@@ -8,10 +9,28 @@ import Image from 'next/image';
 interface HeaderProps {
   config: Config;
   judgeId: string;
+  judgeInfo?: { fullName: string; image?: string };
   onLogout?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ config, judgeId, onLogout }) => {
+const Header: React.FC<HeaderProps> = ({ config, judgeId, judgeInfo, onLogout }) => {
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  
+  // Debug info
+  console.log('🔍 [Header] judgeInfo:', judgeInfo);
+  console.log('🖼️ [Header] image URL:', judgeInfo?.image);
+  console.log('📊 [Header] Has image?:', !!judgeInfo?.image);
+  console.log('📊 [Header] Image length:', judgeInfo?.image?.length);
+  
+  // Test specific users
+  if (judgeId === 'ngannguyen' || judgeId === 'thanhthanh') {
+    console.log(`🧪 [Header] Testing user ${judgeId}:`, {
+      fullName: judgeInfo?.fullName,
+      imageExists: !!judgeInfo?.image,
+      imageUrl: judgeInfo?.image
+    });
+  }
+  
   const getRoundLabel = (round: string) => {
     switch (round) {
       case 'CK1': return 'TOP 36';
@@ -91,28 +110,44 @@ const Header: React.FC<HeaderProps> = ({ config, judgeId, onLogout }) => {
         <div className={styles.right}>
           <div className={styles.judgeCard}>
             <div className={styles.judgeAvatar}>
-              <span className={styles.avatarIcon}>◉</span>
+              {judgeInfo?.image && judgeInfo.image.trim() !== '' ? (
+                <div className={styles.imageContainer}>
+                  <img
+                    src={judgeInfo.image}
+                    alt={judgeInfo.fullName || judgeId}
+                    className={styles.avatarImage}
+                    loading="lazy"
+                    onError={(e) => {
+                      console.error('❌ [Header] Judge image load error:', judgeInfo.image);
+                      e.currentTarget.style.display = 'none';
+                    }}
+                    onLoad={() => {
+                      console.log('✅ [Header] Judge image loaded:', judgeInfo.image);
+                    }}
+                  />
+                </div>
+              ) : (
+                <span className={styles.avatarIcon}>👤</span>
+              )}
             </div>
-            <div className={styles.judgeInfo}>
-              <span className={styles.judgeLabel}>Giám khảo</span>
-              <span className={styles.judgeName}>{judgeId}</span>
+            <div className={styles.judgeContent}>
+              <div className={styles.judgeInfo}>
+                <span className={styles.judgeLabel}>Giám khảo</span>
+                <span className={styles.judgeName}>{judgeInfo?.fullName || judgeId}</span>
+              </div>
+              
+              {onLogout && (
+                <button 
+                  className={styles.logoutButton} 
+                  onClick={() => setShowLogoutDialog(true)}
+                  title="Đăng xuất khỏi hệ thống"
+                >
+                  <span className={styles.logoutIcon}>⏻</span>
+                  <span className={styles.logoutText}>Đăng xuất</span>
+                </button>
+              )}
             </div>
           </div>
-          
-          {onLogout && (
-            <button 
-              className={styles.logoutButton} 
-              onClick={() => {
-                if (window.confirm('Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?')) {
-                  onLogout();
-                }
-              }}
-              title="Đăng xuất khỏi hệ thống"
-            >
-              <span className={styles.logoutIcon}>⏻</span>
-              <span className={styles.logoutText}>Thoát</span>
-            </button>
-          )}
         </div>
       </div>
 
@@ -127,6 +162,46 @@ const Header: React.FC<HeaderProps> = ({ config, judgeId, onLogout }) => {
             </div>
           </div>
         </div>
+      )}
+      
+      {/* Logout Confirmation Dialog */}
+      {showLogoutDialog && typeof document !== 'undefined' && createPortal(
+        <div className={styles.dialogOverlay} onClick={() => setShowLogoutDialog(false)}>
+          <div className={styles.dialogContainer} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.dialogHeader}>
+              <div className={styles.dialogIcon}>⚠️</div>
+              <h3 className={styles.dialogTitle}>Xác nhận đăng xuất</h3>
+            </div>
+            <div className={styles.dialogBody}>
+              <p className={styles.dialogMessage}>
+                Bạn có chắc chắn muốn đăng xuất khỏi hệ thống chấm điểm?
+              </p>
+              <p className={styles.dialogSubmessage}>
+                Mọi thay đổi chưa lưu sẽ bị mất.
+              </p>
+            </div>
+            <div className={styles.dialogActions}>
+              <button 
+                className={styles.cancelButton}
+                onClick={() => setShowLogoutDialog(false)}
+              >
+                <span className={styles.buttonIcon}>✕</span>
+                <span>Hủy bỏ</span>
+              </button>
+              <button 
+                className={styles.confirmButton}
+                onClick={() => {
+                  setShowLogoutDialog(false);
+                  onLogout?.();
+                }}
+              >
+                <span className={styles.buttonIcon}>⏻</span>
+                <span>Đăng xuất</span>
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </header>
   );

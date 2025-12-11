@@ -51,12 +51,14 @@ export interface Judge {
   USERNAME: string;        
   PASSWORD_HASH: string;
   FULL_NAME: string;
+  IMAGE_URL_BGK: string;
   STATUS: 'ACTIVE' | 'INACTIVE';
 }
 
 export interface AuthSession {
   username: string;        
   fullName: string;
+  image?: string;
   token: string;
   expiresAt: number;
 }

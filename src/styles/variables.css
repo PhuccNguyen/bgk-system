@@ -55,7 +55,8 @@
   /* Z-index */
   --z-base: 1;
   --z-dropdown: 1000;
-  --z-modal: 2000;
-  --z-popover: 3000;
-  --z-tooltip: 4000;
+  --z-modal: 5000;
+  --z-popover: 8000;
+  --z-tooltip: 10000;
+  --z-modal-max: 99999;
 }

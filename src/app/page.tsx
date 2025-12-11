@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import Header from '@/components/Header/Header';
 import LoginForm from '@/components/LoginForm/LoginForm';
 import GridMode from '@/components/GridMode/GridMode';
@@ -17,6 +18,7 @@ export default function Home() {
     if (typeof window !== 'undefined') {
       const saved = getSession();
       console.log('🔐 [page.tsx] Initial session load:', saved);
+      console.log('🖼️ [page.tsx] Session image:', saved?.image);
       return saved;
     }
     return null;
@@ -31,6 +33,7 @@ export default function Home() {
   const [displayMode, setDisplayMode] = useState<DisplayMode>('LOCKED');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showFloatingLogoutDialog, setShowFloatingLogoutDialog] = useState(false);
 
 
   // Determine Display Mode
@@ -143,14 +146,12 @@ export default function Home() {
 
   // Handle Logout
   const handleLogout = () => {
-    if (confirm('Bạn có chắc muốn đăng xuất?')) {
-      clearSession();
-      setSession(null);
-      setConfig(null);
-      setContestants([]);
-      setOnStageContestants([]);
-      setMyScores({});
-    }
+    clearSession();
+    setSession(null);
+    setConfig(null);
+    setContestants([]);
+    setOnStageContestants([]);
+    setMyScores({});
   };
 
   // Submit Score Handler (WITH TOKEN VERIFICATION)
@@ -243,7 +244,14 @@ export default function Home() {
   if (displayMode === 'LOCKED') {
     return (
       <div className={styles.container}>
-        <Header config={config} judgeId={session.username} />
+        <Header 
+          config={config} 
+          judgeId={session.username}
+          judgeInfo={{
+            fullName: session.fullName,
+            image: session.image
+          }}
+        />
         <div className={styles.lockedScreen}>
           <div className={styles.lockedIcon}>🔒</div>
           <h1 className={styles.lockedTitle}>Hệ thống đã khóa</h1>
@@ -263,7 +271,15 @@ export default function Home() {
   // Main App
   return (
     <div className={styles.container}>
-      <Header config={config} judgeId={session.username} />
+      <Header 
+        config={config} 
+        judgeId={session.username}
+        judgeInfo={{
+          fullName: session.fullName,
+          image: session.image
+        }}
+        onLogout={handleLogout}
+      />
 
       {/* Warning banner khi BTC khóa hệ thống */}
       {config.IS_LOCKED && (
@@ -306,9 +322,56 @@ export default function Home() {
         )}
       </main>
 
-      <button className={styles.floatingLogout} onClick={handleLogout}>
-        🚪
-      </button>
+      <div className={styles.floatingLogout} onClick={() => setShowFloatingLogoutDialog(true)}>
+        <div className={styles.logoutIconContainer}>
+          <span className={styles.logoutMainIcon}>⏻</span>
+          <span className={styles.logoutRipple}></span>
+        </div>
+        <div className={styles.logoutTooltip}>
+          <span className={styles.tooltipText}>Đăng xuất hệ thống</span>
+          <div className={styles.tooltipArrow}></div>
+        </div>
+      </div>
+
+      {/* Floating Logout Confirmation Dialog */}
+      {showFloatingLogoutDialog && typeof document !== 'undefined' && createPortal(
+        <div className={styles.dialogOverlay} onClick={() => setShowFloatingLogoutDialog(false)}>
+          <div className={styles.dialogContainer} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.dialogHeader}>
+              <div className={styles.dialogIcon}>⚠️</div>
+              <h3 className={styles.dialogTitle}>Xác nhận đăng xuất</h3>
+            </div>
+            <div className={styles.dialogBody}>
+              <p className={styles.dialogMessage}>
+                Bạn có chắc chắn muốn đăng xuất khỏi hệ thống chấm điểm?
+              </p>
+              <p className={styles.dialogSubmessage}>
+                Mọi thay đổi chưa lưu sẽ bị mất.
+              </p>
+            </div>
+            <div className={styles.dialogActions}>
+              <button 
+                className={styles.cancelButton}
+                onClick={() => setShowFloatingLogoutDialog(false)}
+              >
+                <span className={styles.buttonIcon}>✕</span>
+                <span>Hủy bỏ</span>
+              </button>
+              <button 
+                className={styles.confirmButton}
+                onClick={() => {
+                  setShowFloatingLogoutDialog(false);
+                  handleLogout();
+                }}
+              >
+                <span className={styles.buttonIcon}>⏻</span>
+                <span>Đăng xuất</span>
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

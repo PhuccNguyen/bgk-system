@@ -101,3 +101,24 @@ img {
   image-rendering: crisp-edges;
 }
 
+/* ===== MODAL FORCE TOP ===== */
+.modal-force-top {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+}
+
+/* ===== PORTAL MODAL OVERRIDE ===== */
+body > [data-portal="modal"] {
+  z-index: 2147483647 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
