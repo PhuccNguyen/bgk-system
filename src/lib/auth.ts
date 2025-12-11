@@ -83,46 +83,102 @@ export function createSession(judge: Judge): AuthSession {
   return session;
 }
 
-// Kiểm tra session hợp lệ
+// Enhanced Session Validation with Production Fixes
+export function validateSession(session: AuthSession | null): boolean {
+  const now = Date.now();
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  console.log('🔍 [validateSession] Comprehensive check:', {
+    hasSession: !!session,
+    hasToken: !!session?.token,
+    hasUsername: !!session?.username,
+    expiresAt: session?.expiresAt,
+    currentTime: now,
+    timeLeft: session?.expiresAt ? (session.expiresAt - now) : 'no-expiry',
+    timeLeftMinutes: session?.expiresAt ? Math.round((session.expiresAt - now) / 60000) : 'no-expiry',
+    isExpired: session?.expiresAt ? session.expiresAt < now : 'no-expiry',
+    environment: isProduction ? 'PRODUCTION' : 'DEVELOPMENT',
+    domain: typeof window !== 'undefined' ? window.location.host : 'server-side'
+  });
+  
+  // Check session structure
+  if (!session || !session.token || !session.username || !session.expiresAt) {
+    console.log('❌ [validateSession] Invalid session structure');
+    return false;
+  }
+  
+  // Check expiration with buffer for production stability
+  const bufferTime = isProduction ? 30000 : 5000; // 30s for prod, 5s for dev
+  const effectiveExpiry = session.expiresAt - bufferTime;
+  const isExpiringSoon = now > effectiveExpiry;
+  
+  if (isExpiringSoon) {
+    console.log('⏰ [validateSession] Session expired or will expire soon:', {
+      expiresAt: new Date(session.expiresAt).toISOString(),
+      effectiveExpiry: new Date(effectiveExpiry).toISOString(),
+      currentTime: new Date(now).toISOString(),
+      timeLeftMs: session.expiresAt - now,
+      bufferUsed: bufferTime
+    });
+    return false;
+  }
+  
+  console.log('✅ [validateSession] Session valid - OK to proceed');
+  return true;
+}
+
+// Kiểm tra session hợp lệ với enhanced production support
 export function getSession(): AuthSession | null {
   if (typeof window === 'undefined') return null;
   
   try {
     let sessionStr = localStorage.getItem('bgk_session');
+    let storageUsed = 'localStorage';
     
-    // Fallback to sessionStorage if localStorage fails (HTTPS issues)
+    // Fallback to sessionStorage if localStorage fails (HTTPS issues on VPS)
     if (!sessionStr && typeof sessionStorage !== 'undefined') {
       sessionStr = sessionStorage.getItem('bgk_session');
+      storageUsed = 'sessionStorage';
       console.log('🔄 [getSession] Fallback to sessionStorage');
     }
     
     if (!sessionStr) {
-      console.log('🔐 [getSession] No session found in localStorage or sessionStorage');
+      console.log('🔐 [getSession] No session found in any storage');
       return null;
     }
 
     const session: AuthSession = JSON.parse(sessionStr);
-    console.log('🔐 [getSession] Session loaded:', {
+    console.log('🔐 [getSession] Session loaded from ' + storageUsed + ':', {
       username: session.username,
+      fullName: session.fullName,
+      hasImage: !!session.image,
       expiresAt: new Date(session.expiresAt).toISOString(),
-      timeLeft: Math.round((session.expiresAt - Date.now()) / 1000 / 60) + ' minutes'
+      timeLeft: Math.round((session.expiresAt - Date.now()) / 1000 / 60) + ' minutes',
+      tokenLength: session.token?.length || 0
     });
 
-    if (Date.now() > session.expiresAt) {
-      console.log('⏰ [getSession] Session expired, clearing');
+    // Use enhanced validation
+    if (!validateSession(session)) {
+      console.log('❌ [getSession] Session validation failed, clearing');
       clearSession();
       return null;
     }
 
+    // Verify token with detailed logging
     const expectedToken = generateToken(session.username);
     if (session.token !== expectedToken) {
-      console.log('🚫 [getSession] Token mismatch, clearing session');
-      console.log('Expected token:', expectedToken);
-      console.log('Actual token:', session.token);
+      console.log('🚫 [getSession] Token mismatch - possible VPS timezone issue:', {
+        expected: expectedToken,
+        actual: session.token,
+        username: session.username,
+        timezoneOffset: new Date().getTimezoneOffset(),
+        utcDate: new Date().toISOString().split('T')[0]
+      });
       clearSession();
       return null;
     }
 
+    console.log('✅ [getSession] Session fully validated and ready');
     return session;
   } catch (error) {
     console.error('❌ [getSession] Error validating session:', error);
