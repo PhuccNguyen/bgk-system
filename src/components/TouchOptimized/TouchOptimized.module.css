@@ -1,0 +1,103 @@
+/* ===== TOUCH OPTIMIZATION UTILITIES ===== */
+
+/* Global touch-friendly button styles */
+.touchButton {
+  min-height: 48px;
+  min-width: 48px;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  border: none;
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 255, 0.1) 0%, 
+    rgba(240, 147, 251, 0.1) 100%
+  );
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  color: var(--color-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Touch optimizations */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  
+  /* Prevent zoom on double tap */
+  touch-action: manipulation;
+}
+
+.touchButton:hover {
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 255, 0.2) 0%, 
+    rgba(240, 147, 251, 0.2) 100%
+  );
+  border-color: rgba(0, 212, 255, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(0, 212, 255, 0.3);
+}
+
+.touchButton:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
+}
+
+.touchButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Large touch target for mobile */
+@media (max-width: 768px) {
+  .touchButton {
+    min-height: 52px;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 480px) {
+  .touchButton {
+    min-height: 56px;
+    padding: var(--spacing-xl);
+    font-size: 18px;
+    border-radius: var(--radius-xl);
+  }
+}
+
+/* ===== HAPTIC FEEDBACK SIMULATION ===== */
+.touchButton.haptic {
+  animation: hapticFeedback 0.1s ease-out;
+}
+
+@keyframes hapticFeedback {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+/* ===== ACCESSIBILITY ENHANCEMENTS ===== */
+.touchButton:focus-visible {
+  outline: 3px solid rgba(0, 212, 255, 0.6);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .touchButton {
+    border: 3px solid;
+    background: transparent;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .touchButton {
+    transition: none;
+    animation: none;
+  }
+}
