@@ -1,20 +1,21 @@
 /* ===== SPLIT CONTAINER ===== */
 .splitContainer {
-  padding: var(--spacing-md);
-  max-width: 1400px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  max-width: 1200px; /* Reduced from 1400px */
   margin: 0 auto;
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 100px); /* Reduced spacing */
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm); /* Tighter spacing */
 }
 
 /* ===== CONTESTANTS GRID ===== */
 .contestantsGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm); /* Tighter gap */
   flex: 1;
+  align-items: stretch; /* Equal height cards */
 }
 
 /* ===== CONTESTANT CARD ===== */
@@ -115,7 +116,9 @@
   width: 100%;
   aspect-ratio: 3 / 4;
   overflow: hidden;
-  max-height: 400px;
+  max-height: 320px; /* Reduced from 400px for better layout */
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .imageWrapper {
@@ -123,15 +126,29 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Show full image without cropping - Better for scoring interface */
 .image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top center;
+  object-fit: contain; /* Shows entire image */
+  object-position: center center;
   transition: transform 0.4s ease;
+  background: rgba(0, 0, 0, 0.05); /* Subtle background for letterboxing */
 }
+
+/* Alternative: Crop to fill (uncomment if needed)
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  object-position: center center;
+  transition: transform 0.4s ease;
+} */
 
 .contestantCard:hover .image {
   transform: scale(1.05);
@@ -298,21 +315,21 @@
 
 /* ===== INFO SECTION ===== */
 .infoSection {
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-md); /* Reduced padding */
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7));
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs); /* Tighter spacing */
   align-items: center;
 }
 
 .contestantName {
-  font-size: 18px;
+  font-size: 16px; /* Reduced from 18px */
   font-weight: 600;
   color: white;
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.2; /* Tighter line height */
 }
 
 .statusBadge {
@@ -347,17 +364,17 @@
 
 /* ===== SCORE PANEL ===== */
 .scorePanel {
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm); /* Reduced padding */
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs); /* Tighter spacing */
 }
 
 .scorePanelLabel {
-  font-size: 14px;
+  font-size: 12px; /* Smaller font */
   font-weight: 600;
   color: rgba(255, 255, 255, 0.7);
   text-align: center;
@@ -368,7 +385,7 @@
 .scoreGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 4px; /* Tighter gap */
 }
 
 .scoreBtn {
