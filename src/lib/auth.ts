@@ -88,9 +88,16 @@ export function getSession(): AuthSession | null {
   if (typeof window === 'undefined') return null;
   
   try {
-    const sessionStr = localStorage.getItem('bgk_session');
+    let sessionStr = localStorage.getItem('bgk_session');
+    
+    // Fallback to sessionStorage if localStorage fails (HTTPS issues)
+    if (!sessionStr && typeof sessionStorage !== 'undefined') {
+      sessionStr = sessionStorage.getItem('bgk_session');
+      console.log('🔄 [getSession] Fallback to sessionStorage');
+    }
+    
     if (!sessionStr) {
-      console.log('🔐 [getSession] No session found in localStorage');
+      console.log('🔐 [getSession] No session found in localStorage or sessionStorage');
       return null;
     }
 
@@ -127,7 +134,11 @@ export function getSession(): AuthSession | null {
 // Xóa session
 export function clearSession(): void {
   if (typeof window !== 'undefined') {
+    console.log('🗑️ [clearSession] Clearing session from localStorage');
     localStorage.removeItem('bgk_session');
+    
+    // Clear any potential cached session data
+    sessionStorage.removeItem('bgk_session');
   }
 }
 
@@ -138,6 +149,13 @@ function generateToken(username: string): string {
   const utcDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
   const data = `${username}:${secret}:${utcDate}`;
   
+  console.log('🎫 [generateToken] Data for hashing:', {
+    username,
+    utcDate,
+    dataString: data,
+    isProduction: process.env.NODE_ENV === 'production'
+  });
+  
   let hash = 0;
   for (let i = 0; i < data.length; i++) {
     const char = data.charCodeAt(i);
@@ -145,7 +163,10 @@ function generateToken(username: string): string {
     hash = hash & hash;
   }
   
-  return Math.abs(hash).toString(36);
+  const token = Math.abs(hash).toString(36);
+  console.log('🔑 [generateToken] Generated token:', token);
+  
+  return token;
 }
 
 // Verify token

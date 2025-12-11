@@ -41,7 +41,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
 
       if (data.success && data.session) {
         if (typeof window !== 'undefined') {
-          localStorage.setItem('bgk_session', JSON.stringify(data.session));
+          try {
+            localStorage.setItem('bgk_session', JSON.stringify(data.session));
+            // Backup to sessionStorage for HTTPS compatibility
+            sessionStorage.setItem('bgk_session', JSON.stringify(data.session));
+            console.log('✅ [LoginForm] Session saved to both localStorage and sessionStorage');
+          } catch (error) {
+            console.warn('⚠️ [LoginForm] localStorage failed, using sessionStorage:', error);
+            sessionStorage.setItem('bgk_session', JSON.stringify(data.session));
+          }
         }
         onLoginSuccess(data.session);
       } else {
