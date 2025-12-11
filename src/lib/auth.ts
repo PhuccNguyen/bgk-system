@@ -89,23 +89,36 @@ export function getSession(): AuthSession | null {
   
   try {
     const sessionStr = localStorage.getItem('bgk_session');
-    if (!sessionStr) return null;
+    if (!sessionStr) {
+      console.log('🔐 [getSession] No session found in localStorage');
+      return null;
+    }
 
     const session: AuthSession = JSON.parse(sessionStr);
+    console.log('🔐 [getSession] Session loaded:', {
+      username: session.username,
+      expiresAt: new Date(session.expiresAt).toISOString(),
+      timeLeft: Math.round((session.expiresAt - Date.now()) / 1000 / 60) + ' minutes'
+    });
 
     if (Date.now() > session.expiresAt) {
+      console.log('⏰ [getSession] Session expired, clearing');
       clearSession();
       return null;
     }
 
     const expectedToken = generateToken(session.username);
     if (session.token !== expectedToken) {
+      console.log('🚫 [getSession] Token mismatch, clearing session');
+      console.log('Expected token:', expectedToken);
+      console.log('Actual token:', session.token);
       clearSession();
       return null;
     }
 
     return session;
   } catch (error) {
+    console.error('❌ [getSession] Error validating session:', error);
     clearSession();
     return null;
   }
@@ -121,7 +134,9 @@ export function clearSession(): void {
 // Generate token
 function generateToken(username: string): string {
   const secret = process.env.NEXT_PUBLIC_TOKEN_SECRET || 'BGK_SECRET_2025';
-  const data = `${username}:${secret}:${new Date().toDateString()}`;
+  // Use UTC date to avoid timezone issues between client and server
+  const utcDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+  const data = `${username}:${secret}:${utcDate}`;
   
   let hash = 0;
   for (let i = 0; i < data.length; i++) {

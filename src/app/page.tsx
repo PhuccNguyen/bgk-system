@@ -114,8 +114,21 @@ export default function Home() {
 
       setIsLoading(false);
     } catch (err) {
-      console.error('Error loading data:', err);
-      setError('Không thể tải dữ liệu. Vui lòng kiểm tra kết nối.');
+      console.error('❌ [loadData] Error loading data:', err);
+      
+      // Kiểm tra nếu là lỗi network vs lỗi auth
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      
+      if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
+        console.log('🚫 [loadData] Auth error, logging out');
+        clearSession();
+        setSession(null);
+      } else {
+        // Chỉ set error, không logout nếu là network issue
+        console.log('🌐 [loadData] Network error, retaining session');
+        setError('Không thể tải dữ liệu. Vui lòng kiểm tra kết nối.');
+      }
+      
       setIsLoading(false);
     }
   }, [session, determineDisplayMode]);
@@ -126,18 +139,23 @@ export default function Home() {
       // Load lần đầu
       const timer = setTimeout(() => loadData(), 0);
       
-      // Auto-reload mỗi 15 giây (tăng từ 5s để tránh flicker)
+      // Auto-reload mỗi 30 giây (tăng lên để tránh conflict với VPS)
       const interval = setInterval(() => {
         console.log('⏰ [Auto-reload] Refreshing data...');
-        loadData();
-      }, 15000); // 15 giây
+        // Chỉ reload nếu không có error
+        if (!error) {
+          loadData();
+        } else {
+          console.log('⏸️ [Auto-reload] Skipping due to error state');
+        }
+      }, 30000); // 30 giây
       
       return () => {
         clearTimeout(timer);
         clearInterval(interval);
       };
     }
-  }, [session, loadData]);
+  }, [session, loadData, error]);
 
   // Handle Login Success
   const handleLoginSuccess = (newSession: AuthSession) => {
