@@ -51,6 +51,7 @@ const ScoreModal: React.FC<ScoreModalProps> = ({
           className={styles.closeButton}
           onClick={onClose}
           disabled={isSubmitting}
+          title="Đóng cửa sổ chấm điểm"
         >
           ✕
         </button>

@@ -59,7 +59,7 @@ const SpotlightMode: React.FC<SpotlightModeProps> = ({
             />
             {hasScored && (
               <div className={styles.scoredBadge}>
-                <span className={styles.scoredIcon}>✓</span>
+                <span className={styles.scoredIcon}>◉</span>
                 <span className={styles.scoredText}>Đã chấm</span>
               </div>
             )}
@@ -97,12 +97,12 @@ const SpotlightMode: React.FC<SpotlightModeProps> = ({
                 onClick={handleSubmitClick}
                 disabled={selectedScore === null || isSubmitting}
               >
-                {isSubmitting ? '⏳ Đang gửi...' : '✓ Xác nhận điểm'}
+                {isSubmitting ? '○ Đang gửi...' : '▶ Xác nhận điểm'}
               </button>
             </div>
           ) : (
             <div className={styles.completedPanel}>
-              <div className={styles.completedIcon}>✓</div>
+              <div className={styles.completedIcon}>◉</div>
               <div className={styles.completedScore}>{myScore}</div>
               <div className={styles.completedText}>Điểm đã được ghi nhận</div>
             </div>

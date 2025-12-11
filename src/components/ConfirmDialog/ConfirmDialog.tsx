@@ -19,12 +19,12 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   return (
     <div className={styles.backdrop} onClick={onCancel}>
       <div className={styles.dialog} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.icon}>⚠️</div>
+        <div className={styles.icon}>◆</div>
         
         <div className={styles.message}>{message}</div>
 
         <div className={styles.note}>
-          ⚡ Lưu ý: Điểm này sẽ được ghi nhận và không thể chỉnh sửa
+          ▸ Lưu ý: Điểm này sẽ được ghi nhận và không thể chỉnh sửa
         </div>
 
         <div className={styles.buttons}>
@@ -33,14 +33,14 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             onClick={onCancel}
             disabled={isSubmitting}
           >
-            ← Quay lại
+            ◄ Quay lại
           </button>
           <button
             className={styles.confirmButton}
             onClick={onConfirm}
             disabled={isSubmitting}
           >
-            {isSubmitting ? '⏳ Đang xử lý...' : '✓ Xác nhận gửi'}
+            {isSubmitting ? '○ Processing...' : '▶ Xác nhận chấm điểm'}
           </button>
         </div>
       </div>

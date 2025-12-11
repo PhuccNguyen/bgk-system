@@ -1,0 +1,33 @@
+# Robots.txt for BGK System - TingNect Ecosystem
+# Hệ thống nội bộ - Không cho phép crawl
+
+User-agent: *
+Disallow: /
+
+# Cho phép crawl các file static cần thiết
+Allow: /favicon.ico
+Allow: /PreviewSeo/
+Allow: /*.css
+Allow: /*.js
+
+# Sitemap (nếu có trong tương lai)
+# Sitemap: https://bgk.tingnect.com/sitemap.xml
+
+# Crawl delay cho các bot được phép
+Crawl-delay: 86400
+
+# Block các bot phổ biến
+User-agent: Googlebot
+Disallow: /
+
+User-agent: Bingbot
+Disallow: /
+
+User-agent: facebookexternalhit
+Disallow: /
+
+User-agent: Twitterbot
+Disallow: /
+
+# Thông tin liên hệ
+# Contact: contact@trustlab.app

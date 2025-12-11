@@ -31,10 +31,10 @@ export default function TestPage() {
 
   return (
     <div style={{ padding: '20px', fontFamily: 'monospace' }}>
-      <h1>🧪 Test Page - Data Debug</h1>
+      <h1>◆ Test Page - Data Debug</h1>
       
       <div style={{ background: '#f0f0f0', padding: '15px', marginBottom: '20px', borderRadius: '8px' }}>
-        <h2>📋 CONFIG</h2>
+        <h2>▣ CONFIG</h2>
         <pre>{JSON.stringify(data.config, null, 2)}</pre>
       </div>
 

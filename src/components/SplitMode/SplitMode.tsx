@@ -90,7 +90,7 @@ const SplitMode: React.FC<SplitModeProps> = ({
                   onClick={() => handleSubmit(contestant.SBD)}
                   disabled={selectedScore === undefined || isSubmitting}
                 >
-                  {isSubmitting ? 'Đang gửi...' : 'Gửi điểm'}
+                  {isSubmitting ? '◯ Đang gửi...' : '▶ Gửi điểm'}
                 </button>
               </div>
             )}

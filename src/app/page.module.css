@@ -1,29 +1,81 @@
 .container {
   min-height: 100vh;
-  background: var(--color-bg-dark);
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1628 100%);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.container::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  animation: gridMove 30s linear infinite;
+}
+
+@keyframes gridMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
 }
 
 .main {
-  min-height: calc(100vh - 100px);
+  min-height: calc(100vh - 120px);
+  position: relative;
+  z-index: 1;
 }
 
-/* Loading Screen */
+/* ===== LOADING SCREEN ===== */
 .loadingScreen {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-2xl);
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1628 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.loadingScreen::before {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.15), transparent);
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: loadingPulse 3s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
 }
 
 .spinner {
-  width: 60px;
-  height: 60px;
-  border: 4px solid var(--color-bg-medium);
-  border-top-color: var(--color-primary);
-  border-radius: var(--radius-full);
-  animation: spin 1s linear infinite;
+  width: 80px;
+  height: 80px;
+  border: 5px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #00d4ff;
+  border-right-color: #f093fb;
+  border-radius: 50%;
+  animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
 }
 
 @keyframes spin {
@@ -34,49 +86,24 @@
 
 .loadingText {
   font-size: var(--font-size-xl);
-  color: var(--color-text-secondary);
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  letter-spacing: 2px;
+  animation: textFade 2s ease-in-out infinite;
 }
 
-/* Error Screen */
+@keyframes textFade {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ===== ERROR SCREEN ===== */
 .errorScreen {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-xl);
-  padding: var(--spacing-2xl);
-  text-align: center;
-}
-
-.errorIcon {
-  font-size: 80px;
-}
-
-.errorText {
-  font-size: var(--font-size-xl);
-  color: var(--color-error);
-  max-width: 500px;
-}
-
-.retryButton {
-  padding: var(--spacing-lg) var(--spacing-2xl);
-  background: var(--color-primary);
-  color: var(--color-bg-dark);
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-base);
-}
-
-.retryButton:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-/* Locked Screen */
-.lockedScreen {
-  min-height: calc(100vh - 120px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -84,72 +111,182 @@
   gap: var(--spacing-2xl);
   padding: var(--spacing-3xl);
   text-align: center;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1628 100%);
 }
 
-.lockedIcon {
+.errorIcon {
   font-size: 120px;
-  animation: pulse 2s ease-in-out infinite;
+  animation: errorShake 0.8s ease-in-out;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(0.95);
-  }
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
 }
 
-.lockedTitle {
-  font-size: var(--font-size-3xl);
+.errorText {
+  font-size: var(--font-size-xl);
+  color: #ff6b6b;
+  max-width: 600px;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.retryButton {
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  background: linear-gradient(135deg, #00d4ff, #0099ff);
+  color: white;
+  font-size: var(--font-size-lg);
   font-weight: 700;
-  color: var(--color-primary);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+  box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
   text-transform: uppercase;
   letter-spacing: 2px;
 }
 
+.retryButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(0, 212, 255, 0.6);
+}
+
+/* ===== LOCKED SCREEN ===== */
+.lockedScreen {
+  min-height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-3xl);
+  padding: var(--spacing-3xl);
+  text-align: center;
+  position: relative;
+}
+
+.lockedScreen::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(240, 147, 251, 0.1), transparent);
+  border-radius: 50%;
+  filter: blur(100px);
+  animation: lockedPulse 4s ease-in-out infinite;
+}
+
+@keyframes lockedPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.6;
+  }
+}
+
+.lockedIcon {
+  font-size: 150px;
+  animation: lockRotate 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(240, 147, 251, 0.5));
+}
+
+@keyframes lockRotate {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(-10deg) scale(1.05);
+  }
+  75% {
+    transform: rotate(10deg) scale(1.05);
+  }
+}
+
+.lockedTitle {
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 60px rgba(240, 147, 251, 0.5);
+}
+
 .lockedMessage {
   font-size: var(--font-size-xl);
-  color: var(--color-text-secondary);
-  max-width: 600px;
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 700px;
+  line-height: 1.8;
+  font-weight: 500;
+  letter-spacing: 1px;
 }
-/* Thêm vào cuối file */
 
 .logoutButton {
-  margin-top: var(--spacing-2xl);
-  padding: var(--spacing-lg) var(--spacing-2xl);
-  background: var(--color-error);
-  color: var(--color-text-primary);
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-lg) var(--spacing-3xl);
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
   font-size: var(--font-size-lg);
   font-weight: 700;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   transition: all var(--transition-base);
+  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .logoutButton:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(239, 68, 68, 0.6);
 }
 
 .floatingLogout {
   position: fixed;
-  bottom: var(--spacing-xl);
-  right: var(--spacing-xl);
+  bottom: var(--spacing-2xl);
+  right: var(--spacing-2xl);
   width: 60px;
   height: 60px;
-  border-radius: var(--radius-full);
-  background: var(--color-error);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-2xl);
-  box-shadow: var(--shadow-xl);
-  z-index: var(--z-dropdown);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  font-size: 28px;
+  box-shadow: 0 10px 40px rgba(239, 68, 68, 0.5);
+  z-index: 1000;
   transition: all var(--transition-base);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .floatingLogout:hover {
-  transform: scale(1.1);
-  box-shadow: 0 15px 35px rgba(239, 68, 68, 0.5);
+  transform: scale(1.15) rotate(15deg);
+  box-shadow: 0 15px 50px rgba(239, 68, 68, 0.7);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .lockedTitle {
+    font-size: 36px;
+  }
+
+  .lockedIcon {
+    font-size: 100px;
+  }
+
+  .errorIcon {
+    font-size: 80px;
+  }
+
+  .floatingLogout {
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
 }
