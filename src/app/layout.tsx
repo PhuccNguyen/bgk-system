@@ -126,11 +126,52 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'HỆ THỐNG GIÁM KHẢO - BGK System',
+    description: 'Hệ thống chấm điểm điện tử chuyên nghiệp dành cho Ban Giám Khảo với công nghệ real-time và bảo mật cao',
+    url: 'https://bgk.tingnect.com',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web Browser',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'VND',
+    },
+    author: {
+      '@type': 'Organization',
+      name: 'TingNect Ecosystem',
+      url: 'https://tingnect.com',
+    },
+    provider: {
+      '@type': 'Organization',
+      name: 'TrustLabs Technology',
+      email: 'contact@trustlab.app',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '5.0',
+      ratingCount: '1',
+    },
+  };
+
   return (
     <html lang="vi">
       <head>
+        {/* Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+        
+        {/* DNS Prefetch & Preconnect for Performance */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* PWA & Manifest */}
         <link rel="manifest" href="/manifest.json" />
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
@@ -138,6 +179,12 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="BGK System" />
+        
+        {/* Language & Region */}
+        <meta httpEquiv="content-language" content="vi" />
+        <meta name="language" content="Vietnamese" />
+        <meta name="geo.region" content="VN" />
+        <meta name="geo.placename" content="Vietnam" />
         
         {/* Favicon Override - Force TingNect Logo */}
         <link rel="icon" href="/PreviewSeo/tingnecticon.png?v=20251209" type="image/png" />

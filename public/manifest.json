@@ -1,28 +1,31 @@
 {
   "name": "HỆ THỐNG GIÁM KHẢO - Chấm Điểm Điện Tử",
   "short_name": "BGK System",
-  "description": "Hệ thống chấm điểm điện tử chuyên nghiệp cho Ban Giám Khảo",
-  "start_url": "/",
+  "description": "Hệ thống chấm điểm điện tử chuyên nghiệp cho Ban Giám Khảo với công nghệ real-time, bảo mật cao. Phát triển bởi TingNect x TrustLabs",
+  "start_url": "/?source=pwa",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#0a0e27",
   "theme_color": "#00d4ff",
   "orientation": "portrait-primary",
   "scope": "/",
-  "lang": "vi",
+  "lang": "vi-VN",
   "dir": "ltr",
-  "categories": ["productivity", "business", "utilities"],
+  "categories": ["productivity", "business", "utilities", "education"],
+  "iarc_rating_id": "",
   "screenshots": [
     {
       "src": "/PreviewSeo/screenshot-wide.png",
       "sizes": "1280x720",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "label": "Giao diện chấm điểm chuyên nghiệp"
     },
     {
       "src": "/PreviewSeo/screenshot-narrow.png", 
       "sizes": "640x1136",
       "type": "image/png",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Responsive design trên mobile"
     }
   ],
   "icons": [
@@ -49,8 +52,8 @@
     {
       "name": "Đăng nhập",
       "short_name": "Login",
-      "description": "Đăng nhập hệ thống BGK",
-      "url": "/",
+      "description": "Đăng nhập hệ thống BGK nhanh chóng",
+      "url": "/?source=shortcut",
       "icons": [{ "src": "/PreviewSeo/tingnecticon.png", "sizes": "96x96" }]
     }
   ],
@@ -62,5 +65,6 @@
   },
   "launch_handler": {
     "client_mode": "focus-existing"
-  }
+  },
+  "protocol_handlers": []
 }

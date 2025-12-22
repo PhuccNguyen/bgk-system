@@ -2,32 +2,66 @@
 # Hệ thống nội bộ - Không cho phép crawl
 
 User-agent: *
-Disallow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
 
 # Cho phép crawl các file static cần thiết
 Allow: /favicon.ico
 Allow: /PreviewSeo/
-Allow: /*.css
-Allow: /*.js
+Allow: /logo/
+Allow: /*.css$
+Allow: /*.js$
+Allow: /manifest.json
+Allow: /sitemap.xml
 
-# Sitemap (nếu có trong tương lai)
-# Sitemap: https://bgk.tingnect.com/sitemap.xml
+# Sitemap
+Sitemap: https://bgk.tingnect.com/sitemap.xml
 
 # Crawl delay cho các bot được phép
-Crawl-delay: 86400
+Crawl-delay: 10
 
-# Block các bot phổ biến
-User-agent: Googlebot
+# Block các bot spam và crawler không cần thiết
+User-agent: AhrefsBot
 Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+# Cho phép các bot chính
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /_next/static/
 
 User-agent: Bingbot
-Disallow: /
+Allow: /
+Disallow: /api/
+Disallow: /_next/static/
 
+# Social Media Crawlers (Cho preview links)
 User-agent: facebookexternalhit
-Disallow: /
+Allow: /
+Disallow: /api/
 
 User-agent: Twitterbot
-Disallow: /
+Allow: /
+Disallow: /api/
+
+User-agent: LinkedInBot
+Allow: /
+Disallow: /api/
+
+User-agent: WhatsApp
+Allow: /
+Disallow: /api/
 
 # Thông tin liên hệ
 # Contact: contact@trustlab.app
+# Website: https://bgk.tingnect.com

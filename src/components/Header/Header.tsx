@@ -112,9 +112,11 @@ const Header: React.FC<HeaderProps> = ({ config, judgeId, judgeInfo, onLogout })
             <div className={styles.judgeAvatar}>
               {judgeInfo?.image && judgeInfo.image.trim() !== '' ? (
                 <div className={styles.imageContainer}>
-                  <img
+                  <Image
                     src={judgeInfo.image}
                     alt={judgeInfo.fullName || judgeId}
+                    width={48}
+                    height={48}
                     className={styles.avatarImage}
                     loading="lazy"
                     onError={(e) => {

@@ -23,11 +23,9 @@ export default function Home() {
     }
     return null;
   });
-  const [isCheckingAuth, setIsCheckingAuth] = useState(false);
 
   // App State
   const [config, setConfig] = useState<Config | null>(null);
-  const [contestants, setContestants] = useState<Contestant[]>([]);
   const [onStageContestants, setOnStageContestants] = useState<Contestant[]>([]);
   const [myScores, setMyScores] = useState<{ [sbd: string]: number | null }>({});
   const [displayMode, setDisplayMode] = useState<DisplayMode>('LOCKED');
@@ -39,9 +37,7 @@ export default function Home() {
   // Determine Display Mode
   const determineDisplayMode = useCallback((
     config: Config,
-    onStageCount: number,
-    myScores: { [sbd: string]: number | null },
-    onStageSBDs: string[]
+    onStageCount: number
   ): DisplayMode => {
     // 1. Nếu không có thí sinh trên sân khấu -> LOCKED
     if (onStageCount === 0) {
@@ -80,7 +76,6 @@ export default function Home() {
       console.log('👥 [loadData] All contestants:', allContestants.length);
       
       const activeContestants = allContestants.filter((c: Contestant) => c.STATUS === 'ACTIVE');
-      setContestants(activeContestants);
 
       const onStageSBDs = configData.ON_STAGE_SBD
         .split(',')
@@ -105,7 +100,7 @@ export default function Home() {
       console.log('📊 [loadData] Scores loaded:', scores);
       setMyScores(scores);
 
-      const mode = determineDisplayMode(configData, onStage.length, scores, onStageSBDs);
+      const mode = determineDisplayMode(configData, onStage.length);
       
       console.log('📺 [loadData] Display mode:', mode);
       console.log('🔢 [loadData] onStage.length:', onStage.length);
@@ -167,7 +162,6 @@ export default function Home() {
     clearSession();
     setSession(null);
     setConfig(null);
-    setContestants([]);
     setOnStageContestants([]);
     setMyScores({});
   };
@@ -219,16 +213,6 @@ export default function Home() {
       alert('Lỗi khi gửi điểm. Vui lòng thử lại.');
     }
   };
-
-  // Checking Auth
-  if (isCheckingAuth) {
-    return (
-      <div className={styles.loadingScreen}>
-        <div className={styles.spinner}></div>
-        <p className={styles.loadingText}>Đang kiểm tra phiên đăng nhập...</p>
-      </div>
-    );
-  }
 
   // Not Authenticated - Show Login
   if (!session) {
