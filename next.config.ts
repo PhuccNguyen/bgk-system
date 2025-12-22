@@ -29,6 +29,14 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'via.placeholder.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'megagangnam.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
       }
     ],
     formats: ['image/avif', 'image/webp'],

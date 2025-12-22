@@ -119,9 +119,16 @@ const Header: React.FC<HeaderProps> = ({ config, judgeId, judgeInfo, onLogout })
                     height={48}
                     className={styles.avatarImage}
                     loading="lazy"
+                    unoptimized
                     onError={(e) => {
                       console.error('❌ [Header] Judge image load error:', judgeInfo.image);
-                      e.currentTarget.style.display = 'none';
+                      const target = e.currentTarget as HTMLImageElement;
+                      target.style.display = 'none';
+                      // Show fallback icon
+                      const parent = target.parentElement;
+                      if (parent) {
+                        parent.innerHTML = '<span class="' + styles.avatarIcon + '">👤</span>';
+                      }
                     }}
                     onLoad={() => {
                       console.log('✅ [Header] Judge image loaded:', judgeInfo.image);
