@@ -450,6 +450,75 @@
   font-size: 16px;
 }
 
+/* ===== FOOTER CONTACT (Mobile Only) ===== */
+.footerContact {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-xl);
+  text-align: center;
+  display: none; /* Hidden by default on desktop */
+}
+
+.footerContactDivider {
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 212, 255, 0.3) 50%, 
+    transparent 100%
+  );
+  margin-bottom: var(--spacing-lg);
+}
+
+.footerContactText {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  background: linear-gradient(135deg, #00d4ff, #f093fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.3px;
+}
+
+.footerContactButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 255, 0.1), 
+    rgba(0, 153, 255, 0.1)
+  );
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  border-radius: var(--radius-md);
+  color: #00d4ff;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.footerContactButton:hover {
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 255, 0.2), 
+    rgba(0, 153, 255, 0.2)
+  );
+  border-color: rgba(0, 212, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 212, 255, 0.2);
+}
+
+.footerContactButton svg {
+  transition: transform var(--transition-base);
+}
+
+.footerContactButton:hover svg {
+  transform: translateX(2px);
+}
+
 /* ===== INFO PANEL ===== */
 .infoPanel {
   background: rgba(255, 255, 255, 0.03);
@@ -520,6 +589,114 @@
   font-size: 24px;
 }
 
+/* ===== CONTACT SECTION ===== */
+.contactSection {
+  margin-top: var(--spacing-3xl);
+  padding-top: var(--spacing-2xl);
+}
+
+.contactDivider {
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 212, 255, 0.5) 50%, 
+    transparent 100%
+  );
+  margin-bottom: var(--spacing-2xl);
+  animation: dividerPulse 3s ease-in-out infinite;
+}
+
+@keyframes dividerPulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.contactTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  background: linear-gradient(135deg, #00d4ff, #f093fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--spacing-sm);
+  letter-spacing: -0.5px;
+}
+
+.contactDescription {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-xl);
+}
+
+.contactButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-xl);
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 255, 0.15), 
+    rgba(0, 153, 255, 0.15)
+  );
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: var(--radius-lg);
+  color: #00d4ff;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-base);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.contactButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    transparent 100%
+  );
+  transition: left 0.5s ease;
+}
+
+.contactButton:hover {
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 255, 0.25), 
+    rgba(0, 153, 255, 0.25)
+  );
+  border-color: rgba(0, 212, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 25px rgba(0, 212, 255, 0.2),
+    0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.contactButton:hover::before {
+  left: 100%;
+}
+
+.contactButton:active {
+  transform: translateY(0);
+}
+
+.contactButton svg {
+  transition: transform var(--transition-base);
+}
+
+.contactButton:hover svg {
+  transform: translateX(3px);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   .loginWrapper {
@@ -529,6 +706,11 @@
 
   .infoPanel {
     display: none;
+  }
+
+  /* Show footer contact on mobile/tablet */
+  .footerContact {
+    display: block;
   }
 }
 
